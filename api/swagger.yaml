@@ -1,0 +1,33 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: "Hello World API"
+paths:
+  /hello/{user}:
+    get:
+      description: "Returns a greeting to the user!"
+      parameters:
+      - name: "user"
+        in: "path"
+        description: "The name of the user to greet."
+        required: true
+        type: "string"
+        x-exportParamName: "User"
+      responses:
+        "200":
+          description: "Returns the greeting."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid characters in \"user\" were provided"
+  /projects:
+    get:
+      description: "Returns a list of Admiral Projects"
+      parameters: []
+      responses:
+        "200":
+          description: "Returns the list"
+          schema:
+            type: "string"
+definitions: {}
