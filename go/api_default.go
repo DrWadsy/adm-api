@@ -10,9 +10,14 @@
 package swagger
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 func HelloUserGet(w http.ResponseWriter, r *http.Request) {
@@ -24,5 +29,31 @@ func HelloUserGet(w http.ResponseWriter, r *http.Request) {
 func ProjectsGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "List of Admiral Projects:")
+
+	fmt.Fprintf(w, "List of Admiral Projects:\n")
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		fmt.Fprintf(w, "Error:\n%v", err)
+		panic(err.Error())
+	}
+	// creates the clientset
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		fmt.Fprintf(w, "Error :%v", err)
+		panic(err.Error())
+	}
+	// pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+	// if err != nil {
+	// 	fmt.Fprintf(w, "Error :%v", err)
+	// 	panic(err.Error())
+	// }
+
+	adm_projects, err := clientset.CoreV1().ComponentStatuses().Get(context.TODO(), "AdmiralProjects", metav1.GetOptions{})
+	if err != nil {
+		fmt.Fprintf(w, "Error :%v", err)
+		panic(err.Error())
+	}
+	fmt.Fprintf(w, "Pods:\n%v", adm_projects)
 }
